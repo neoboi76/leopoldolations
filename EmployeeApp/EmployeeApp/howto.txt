@@ -1,0 +1,26 @@
+Steps to run the sample EmployeeApp and the Spring Boot server.
+Preparatory steps
+1. Be sure that you 
+	a. installed JDK 17 and Mavan 3.6.3 in your system
+	b installed MYSQL DB and provided the root password. 
+	c. Makes sure that MYSQL service is running in the services control panael If not then run the MYSQL80 service
+	
+Setuo Spring Boot server	
+2. Download and extract the content of server.zip in a folder.
+3. Update the application.yml entries to specify yhe DB username and password. 
+4. Open a command prompt and change to the folder server with the pom.xml file 
+5. Build the project by typing the command -->  mvn install 
+6. If 4 encountered no error cd to the sbempms folder and type the command --> mvn exec:java to run the program. 
+7. Create the initial employee records using PostMan.
+8. Verify 8he records by using the PostMan.	
+
+9.  Open the port 8080 in the Firewall 
+10.  Open a command prompt and type ipconfig command. Take note of the IP address used by the server.
+
+Run the Android application. 
+11. Download and open the EmployeeApp applicaton in Android Studio
+12. Set the BASE_URL property to the IP address of your machine found in 8.
+13. Debug the application to tun the device emulator
+14. the Chrome applicaton in the device emulator and ser the URL to ensure that the 
+
+
