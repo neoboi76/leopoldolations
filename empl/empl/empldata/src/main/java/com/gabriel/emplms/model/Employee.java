@@ -6,5 +6,8 @@ import java.util.Date;
 public class Employee{
 	int id;
 	String name;
-	String description;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String department;
 }

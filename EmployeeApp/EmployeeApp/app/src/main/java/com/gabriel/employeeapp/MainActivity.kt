@@ -67,6 +67,7 @@ fun EmployeeScreen(viewModel: EmployeeViewModel = viewModel(), modifier: Modifie
 
     if(Employees.isEmpty()){
         LoadingScreen()
+        TestEmployeeList() // Fallback to test data
     } else {
         EmployeeList(Employees = Employees, modifier)
     }
@@ -86,57 +87,52 @@ fun EmployeeList(Employees: List<Employee>, modifier: Modifier) {
 
 @Composable
 fun EmployeeItem(employee: Employee) {
-    Row (Modifier.padding(all = 100.dp)) {
+    Row (Modifier.padding(all = 8.dp)) {
         Image(
             painter = painterResource(R.drawable.leo),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .size(100.dp)
+                .size(48.dp)
                 .clip(CircleShape)
-                .border(3.5.dp, MaterialTheme.colorScheme.primary, CircleShape)
             )
         Spacer(modifier = Modifier.width(8.dp))
-        var isExpanded by remember { mutableStateOf(false) }
-        val surfaceColor by animateColorAsState(
-            if (isExpanded) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
-        )
-        Column(modifier = Modifier.clickable{isExpanded = !isExpanded} ) {
+        Column {
             Text (
-                text = employee.name,
-                color = MaterialTheme.colorScheme.secondary,
-                style = MaterialTheme. typography.titleSmall
+                text = "${employee.firstName} ${employee.lastName}",
+                style = MaterialTheme.typography.bodyLarge
             )
-
             Spacer(modifier = Modifier.height(4.dp))
-
-            Surface(
-                shape = MaterialTheme.shapes.medium,
-                shadowElevation = 1.dp,
-                color = surfaceColor,
-                modifier = Modifier.animateContentSize().padding(1.dp)
-            ) {
-                Text(
-                    text = employee.description,
-                    modifier = Modifier.padding(all = 4.dp),
-                    maxLines = if(isExpanded) Int.MAX_VALUE else 1,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
+            Text(
+                text = employee.department,
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = employee.email,
+                style = MaterialTheme.typography.bodySmall
+            )
         }
     }
-
-
 }
 
 @Composable
 fun LoadingScreen() {
-    Text("Loading...")
+    Text("Loading employees...")
 }
 
 @Composable
 fun ErrorScreen(message: String) {
     Text("Error: $message")
+}
+
+@Composable
+fun TestEmployeeList() {
+    val testEmployees = listOf(
+        Employee(1, "John", "Doe", "john@example.com", "Engineering"),
+        Employee(2, "Jane", "Smith", "jane@example.com", "Management")
+    )
+    EmployeeList(testEmployees, Modifier)
 }
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {

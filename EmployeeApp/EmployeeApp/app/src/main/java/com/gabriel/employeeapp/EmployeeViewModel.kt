@@ -23,8 +23,8 @@ class EmployeeViewModel: ViewModel() {
             try {
                 val response = employeeApi.getEmployees()
                 _employees.value = response
-            } catch (e: Exception) {
-                // Handle error
+} catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }

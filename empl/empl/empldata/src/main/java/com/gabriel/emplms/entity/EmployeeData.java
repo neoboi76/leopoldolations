@@ -13,8 +13,10 @@ public class EmployeeData {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-    private String name;
-    private String description;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String department;
 
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)

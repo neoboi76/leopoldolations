@@ -28,7 +28,7 @@ public class EmployeeController {
 		}
 		return response;
 	}
-	@PutMapping("api/employee")
+	@PutMapping("/api/employee")
 	public ResponseEntity<?> add(@RequestBody Employee employee){
 		logger.info("Input >> " + employee.toString() );
 		HttpHeaders headers = new HttpHeaders();
@@ -45,9 +45,9 @@ public class EmployeeController {
 		}
 		return response;
 	}
-	@PostMapping("api/employee")
+	@PostMapping("/api/employee")
 	public ResponseEntity<?> update(@RequestBody Employee employee){
-		logger.info("Update Input >> employee.toString() ");
+		logger.info("Update Input >> " + employee.toString());
 		HttpHeaders headers = new HttpHeaders();
 		ResponseEntity<?> response;
 		try {
@@ -62,7 +62,7 @@ public class EmployeeController {
 		return response;
 	}
 
-	@GetMapping("api/employee/{id}")
+	@GetMapping("/api/employee/{id}")
 	public ResponseEntity<?> get(@PathVariable final Integer id){
 		logger.info("Input employee id >> " + Integer.toString(id));
 		HttpHeaders headers = new HttpHeaders();
@@ -77,7 +77,7 @@ public class EmployeeController {
 		}
 		return response;
 	}
-	@DeleteMapping("api/employee/{id}")
+	@DeleteMapping("/api/employee/{id}")
 	public ResponseEntity<?> delete(@PathVariable final Integer id){
 		logger.info("Input >> " + Integer.toString(id));
 		HttpHeaders headers = new HttpHeaders();

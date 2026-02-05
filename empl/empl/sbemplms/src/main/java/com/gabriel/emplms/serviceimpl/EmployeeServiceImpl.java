@@ -15,7 +15,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	@Autowired
 	EmployeeDataRepository employeeDataRepository;
 	@Autowired
-	TransformEmployeeService tansformerEmployeeService;
+	TransformEmployeeService transformerEmployeeService;
 	@Override
 	public Employee[] getAll() {
 		List<EmployeeData> employeesData = new ArrayList<>();
@@ -24,7 +24,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		Iterator<EmployeeData> it = employeesData.iterator();
 		while(it.hasNext()) {
 			EmployeeData employeeData = it.next();
-			Employee employee = tansformerEmployeeService.transform(employeeData);
+			Employee employee = transformerEmployeeService.transform(employeeData);
 			employees.add(employee);
 		}
 		Employee[] array = new Employee[employees.size()];
@@ -36,17 +36,17 @@ public class EmployeeServiceImpl implements EmployeeService {
 	@Override
 	public Employee create(Employee employee) {
 		logger.info(" add:Input " + employee.toString());
-		EmployeeData employeeData = tansformerEmployeeService.transform(employee);
+		EmployeeData employeeData = transformerEmployeeService.transform(employee);
 		employeeData = employeeDataRepository.save(employeeData);
 		logger.info(" add:Input " + employeeData.toString());
-		Employee newEmployee = tansformerEmployeeService.transform(employeeData);
+		Employee newEmployee = transformerEmployeeService.transform(employeeData);
 		return newEmployee;
 	}
 	@Override
 	public Employee update(Employee employee) {
-		EmployeeData employeeData = tansformerEmployeeService.transform(employee);
+		EmployeeData employeeData = transformerEmployeeService.transform(employee);
 		employeeData = employeeDataRepository.save(employeeData);
-		Employee newEmployee = tansformerEmployeeService.transform(employeeData);
+		Employee newEmployee = transformerEmployeeService.transform(employeeData);
 		return newEmployee;
 	}
 	@Override
@@ -56,7 +56,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		if(optional.isPresent()) {
 			logger.info(" Is present >> ");
 			EmployeeData employeeDatum = optional.get();
-			Employee employee = tansformerEmployeeService.transform(employeeDatum);
+			Employee employee = transformerEmployeeService.transform(employeeDatum);
 			return employee;
 		}
 		logger.info(" Failed >> unable to locate id: " +  Integer.toString(id)  );
