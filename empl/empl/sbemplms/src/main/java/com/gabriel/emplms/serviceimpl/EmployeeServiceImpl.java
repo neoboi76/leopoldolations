@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.*;
+
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 	Logger logger = LoggerFactory.getLogger(EmployeeServiceImpl.class);
@@ -17,6 +18,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	@Autowired
 	TransformEmployeeService transformerEmployeeService;
 	@Override
+
 	public Employee[] getAll() {
 		List<EmployeeData> employeesData = new ArrayList<>();
 		List<Employee> employees = new ArrayList<>();
@@ -28,7 +30,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 			employees.add(employee);
 		}
 		Employee[] array = new Employee[employees.size()];
-		for  (int i=0; i<employees.size(); i++){
+		for  (int i = 0; i < employees.size(); i++){
 			array[i] = employees.get(i);
 		}
 		return array;
@@ -37,9 +39,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 	public Employee create(Employee employee) {
 		logger.info(" add:Input " + employee.toString());
 		EmployeeData employeeData = transformerEmployeeService.transform(employee);
+        System.out.println(employeeData);
 		employeeData = employeeDataRepository.save(employeeData);
 		logger.info(" add:Input " + employeeData.toString());
 		Employee newEmployee = transformerEmployeeService.transform(employeeData);
+        System.out.println(newEmployee);
 		return newEmployee;
 	}
 	@Override
