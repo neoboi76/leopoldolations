@@ -3,7 +3,7 @@ server:
    port: 8080
 spring: 
    datasource: 
-      url: jdbc:mysql://localhost:3306/empldb?allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true&useSSL=false
+      url: jdbc:mysql://localhost:3306/stud_db?allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true&useSSL=false
       username: root
       password: admin
       driver-class-name: com.mysql.cj.jdbc.Driver

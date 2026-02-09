@@ -1,6 +1,6 @@
-com\gabriel\emplms\entity\EmployeeData.class
-com\gabriel\emplms\repository\EmployeeDataRepository.class
-com\gabriel\emplms\transform\TransformEmployeeServiceImpl.class
-com\gabriel\emplms\model\Employee.class
-com\gabriel\emplms\transform\TransformEmployeeService.class
-com\gabriel\emplms\service\EmployeeService.class
+com\gabriel\emplms\transform\TransformStudentServiceImpl.class
+com\gabriel\emplms\model\Student.class
+com\gabriel\emplms\repository\StudentDataRepository.class
+com\gabriel\emplms\service\StudentService.class
+com\gabriel\emplms\transform\TransformStudentService.class
+com\gabriel\emplms\entity\StudentData.class

@@ -53,7 +53,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.0.0</version>
                 <configuration>
-                    <mainClass>com.gabriel.emplms.EmployeeMSApplication</mainClass>
+                    <mainClass>com.gabriel.emplms.StudentMSApplication</mainClass>
                 </configuration>
             </plugin>
         </plugins>
