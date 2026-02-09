@@ -50,14 +50,14 @@ public Student create(Student student) {
 public Student update(Student student) {
 		logger.info(" update:Input " + student.toString());
 		
-		// Load existing student from database to preserve created timestamp
+		
 		Optional<StudentData> existingStudentOpt = studentDataRepository.findById(student.getId());
 		if (!existingStudentOpt.isPresent()) {
 			logger.error(" Failed >> unable to locate student id: " + student.getId());
 			return null;
 		}
 		
-		// Update only the fields that can change, preserving created timestamp
+		
 		StudentData studentData = existingStudentOpt.get();
 		studentData.setFirstName(student.getFirstName());
 		studentData.setLastName(student.getLastName());
@@ -65,7 +65,7 @@ public Student update(Student student) {
 		studentData.setEmail(student.getEmail());
 		studentData.setDepartment(student.getDepartment());
 		
-		// Save - this will preserve created timestamp and update lastUpdated timestamp
+		
 		studentData = studentDataRepository.save(studentData);
 		logger.info(" update:Result " + studentData.toString());
 		

@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   mysqldb:
     image: mysql:8.0
@@ -9,26 +8,35 @@ services:
       MYSQL_USER: mysqluser
       MYSQL_PASSWORD: password
     ports:
-       - "3306:3306"
-       - "33060:33060"
+       - "3307:3306"
     volumes:
       - ./db:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - emplnetwork
-  empl1:
-    image: emplz
-    container_name: empl_1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+  empl-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: empl_backend
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/empldb
       SPRING_DATASOURCE_USERNAME: mysqluser
       SPRING_DATASOURCE_PASSWORD: password
+      SPRING_PROFILES_ACTIVE: docker
     ports:
       - "8080:8080"
     depends_on:
-      - mysqldb
+      mysqldb:
+        condition: service_healthy
     networks:
-      emplnetwork:
+      - emplnetwork
+    restart: unless-stopped
 networks:
   emplnetwork:
     driver: bridge

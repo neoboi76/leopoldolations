@@ -1,2 +1,34 @@
 
 nul
+# ===============================
+# OS / Editor junk
+# ===============================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.factorypath
+
+# ===============================
+# Java / Maven / Gradle
+# ===============================
+target/
+*.class
+*.log
+
+# ===============================
+# Docker
+# ===============================
+*.env
+
+# ===============================
+# MySQL / Database runtime files
+# ===============================
+*.sock
+*.cnf
+ib_*
+binlog.*
+mysql.*
+db/
+
+empl/empl/sbstudms/db/

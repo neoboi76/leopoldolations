@@ -7,8 +7,7 @@ public class TransformStudentServiceImpl implements TransformStudentService {
 @Override
 	public StudentData transform(Student student){
 		StudentData studentData = new StudentData();
-		// Don't set ID for new students - let database auto-generate it
-		// Only set ID if it's greater than 0 (indicating an existing student)
+		
 		if (student.getId() > 0) {
 			studentData.setId(student.getId());
 		}
@@ -17,7 +16,7 @@ public class TransformStudentServiceImpl implements TransformStudentService {
         studentData.setStudentNumber(student.getStudentNumber());
         studentData.setEmail(student.getEmail());
         studentData.setDepartment(student.getDepartment());
-        // Note: created and lastUpdated are managed by database annotations
+        
 		return studentData;
 	}
 @Override
