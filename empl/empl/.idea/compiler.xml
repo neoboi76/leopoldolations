@@ -6,15 +6,15 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="sbemplms" />
-        <module name="empldata" />
+        <module name="sbstudms" />
+        <module name="studdata" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="empldata" options="-parameters" />
-      <module name="sbemplms" options="-parameters" />
+      <module name="sbstudms" options="-parameters" />
+      <module name="studdata" options="-parameters" />
     </option>
   </component>
 </project>

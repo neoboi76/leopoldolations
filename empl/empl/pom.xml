@@ -13,8 +13,8 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>empldata</module>
-        <module>sbemplms</module>
+        <module>studdata</module>
+        <module>sbstudms</module>
     </modules>
     <properties>
         <maven.compiler.source>17</maven.compiler.source>

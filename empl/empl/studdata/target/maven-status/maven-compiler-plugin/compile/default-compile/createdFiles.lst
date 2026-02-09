@@ -1,0 +1,6 @@
+com\gabriel\studms\entity\StudentData.class
+com\gabriel\studms\service\StudentService.class
+com\gabriel\studms\repository\StudentDataRepository.class
+com\gabriel\studms\transform\TransformStudentService.class
+com\gabriel\studms\transform\TransformStudentServiceImpl.class
+com\gabriel\studms\model\Student.class

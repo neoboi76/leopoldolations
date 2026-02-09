@@ -8,6 +8,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.background
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -19,8 +25,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.foundation.background
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -56,18 +63,15 @@ fun StudentApp() {
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     
-    // State variables
     var searchQuery by remember { mutableStateOf("") }
     var showAddDialog by remember { mutableStateOf(false) }
     var showEditDialog by remember { mutableStateOf(false) }
     var selectedStudent by remember { mutableStateOf<Student?>(null) }
     
-    // Observe students from ViewModel
     val students by viewModel.students.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
     
-    // Filter students based on search query
     val filteredStudents = students.filter { student ->
         searchQuery.isEmpty() || 
         student.firstName.contains(searchQuery, ignoreCase = true) ||
@@ -77,7 +81,6 @@ fun StudentApp() {
         student.studentNumber.contains(searchQuery, ignoreCase = true)
     }
     
-    // Load initial data
     LaunchedEffect(Unit) {
         viewModel.fetchStudents()
     }
@@ -99,7 +102,16 @@ fun StudentApp() {
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
-            // Search Bar
+            Text(
+                text = "Student Management System",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp)
+            )
+            
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
@@ -111,7 +123,6 @@ fun StudentApp() {
             
             Spacer(modifier = Modifier.height(8.dp))
             
-            // Content
             if (isLoading) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -163,6 +174,7 @@ fun StudentApp() {
                     items(filteredStudents) { student ->
                         StudentCard(
                             student = student,
+                            isSelected = selectedStudent?.id == student.id,
                             onEdit = {
                                 selectedStudent = student
                                 showEditDialog = true
@@ -172,6 +184,9 @@ fun StudentApp() {
                                 scope.launch {
                                     snackbarHostState.showSnackbar("${student.firstName} ${student.lastName} deleted")
                                 }
+                            },
+                            onClick = {
+                                selectedStudent = if (selectedStudent?.id == student.id) null else student
                             }
                         )
                     }
@@ -180,7 +195,6 @@ fun StudentApp() {
         }
     }
     
-    // Add Student Dialog
     if (showAddDialog) {
         StudentDialog(
             title = "Add New Student",
@@ -188,7 +202,7 @@ fun StudentApp() {
             onDismiss = { showAddDialog = false },
             onConfirm = { firstName, lastName, email, department, studentNumber ->
                 val newStudent = Student(
-                    id = 0, // ID will be assigned by the server
+                    id = 0,
                     firstName = firstName,
                     lastName = lastName,
                     email = email,
@@ -204,7 +218,6 @@ fun StudentApp() {
         )
     }
     
-    // Edit Student Dialog
     if (showEditDialog && selectedStudent != null) {
         StudentDialog(
             title = "Edit Student",
@@ -235,15 +248,46 @@ fun StudentApp() {
 @Composable
 fun StudentCard(
     student: Student,
+    isSelected: Boolean,
     onEdit: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onClick: () -> Unit
 ) {
+    val scale by animateFloatAsState(
+        targetValue = if (isSelected) 1.05f else 1f,
+        animationSpec = tween(durationMillis = 200),
+        label = "scale"
+    )
+    
+    val elevation by animateDpAsState(
+        targetValue = if (isSelected) 12.dp else 4.dp,
+        animationSpec = tween(durationMillis = 200),
+        label = "elevation"
+    )
+    
+    val backgroundColor = if (isSelected) {
+        MaterialTheme.colorScheme.primaryContainer
+    } else {
+        MaterialTheme.colorScheme.surface
+    }
+    
+    val contentColor = if (isSelected) {
+        MaterialTheme.colorScheme.onPrimaryContainer
+    } else {
+        MaterialTheme.colorScheme.onSurface
+    }
+    
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .shadow(elevation = 4.dp, shape = MaterialTheme.shapes.medium),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+            .shadow(elevation = elevation, shape = MaterialTheme.shapes.medium)
+            .scale(scale)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) { onClick() },
+        elevation = CardDefaults.cardElevation(defaultElevation = if (isSelected) 8.dp else 2.dp),
+        colors = CardDefaults.cardColors(containerColor = backgroundColor)
     ) {
         Row(
             modifier = Modifier
@@ -251,7 +295,6 @@ fun StudentCard(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Student Avatar
             Box(
                 modifier = Modifier
                     .size(60.dp)
@@ -260,33 +303,35 @@ fun StudentCard(
                 contentAlignment = Alignment.Center
             ) {
                 if (student.imageUrl != null && student.imageUrl.isNotEmpty()) {
-                    // Note: You would typically use Coil or Glide for image loading
-                    // For now, using a placeholder
-                    // AsyncImage would be used here with proper Coil dependency
                     Box(
                         modifier = Modifier
                             .size(60.dp)
-                            .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
+                            .background(MaterialTheme.colorScheme.primary, CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             painter = painterResource(id = android.R.drawable.ic_menu_gallery),
                             contentDescription = "${student.firstName} ${student.lastName}",
                             modifier = Modifier.size(30.dp),
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer
+                            tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 } else {
                     Box(
                         modifier = Modifier
                             .size(60.dp)
-                            .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
+                            .background(
+                                if (isSelected) MaterialTheme.colorScheme.secondary 
+                                else MaterialTheme.colorScheme.primaryContainer, 
+                                CircleShape
+                            ),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = "${student.firstName.first()}${student.lastName.first()}".uppercase(),
                             style = MaterialTheme.typography.headlineSmall,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            color = if (isSelected) MaterialTheme.colorScheme.onSecondary 
+                                   else MaterialTheme.colorScheme.onPrimaryContainer,
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -295,39 +340,42 @@ fun StudentCard(
             
             Spacer(modifier = Modifier.width(16.dp))
             
-            // Student Information
             Column(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
                     text = "${student.firstName} ${student.lastName}",
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = contentColor
                 )
                 Text(
                     text = "Student ID: ${student.studentNumber}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.primary
+                    color = if (isSelected) MaterialTheme.colorScheme.secondary 
+                           else MaterialTheme.colorScheme.primary
                 )
                 Text(
                     text = student.email,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = if (isSelected) contentColor 
+                           else MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
                     text = student.department,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = if (isSelected) contentColor 
+                           else MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             
-            // Action Buttons
             Row {
                 IconButton(onClick = onEdit) {
                     Icon(
                         Icons.Default.Edit,
                         contentDescription = "Edit Student",
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = if (isSelected) MaterialTheme.colorScheme.secondary 
+                              else MaterialTheme.colorScheme.primary
                     )
                 }
                 IconButton(onClick = onDelete) {
