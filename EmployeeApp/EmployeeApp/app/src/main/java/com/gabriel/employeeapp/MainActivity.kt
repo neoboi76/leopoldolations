@@ -18,7 +18,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -66,6 +71,7 @@ fun StudentApp() {
     var searchQuery by remember { mutableStateOf("") }
     var showAddDialog by remember { mutableStateOf(false) }
     var showEditDialog by remember { mutableStateOf(false) }
+    var showDetailsDialog by remember { mutableStateOf(false) }
     var selectedStudent by remember { mutableStateOf<Student?>(null) }
     
     val students by viewModel.students.collectAsState()
@@ -186,7 +192,8 @@ fun StudentApp() {
                                 }
                             },
                             onClick = {
-                                selectedStudent = if (selectedStudent?.id == student.id) null else student
+                                selectedStudent = student
+                                showDetailsDialog = true
                             }
                         )
                     }
@@ -240,6 +247,20 @@ fun StudentApp() {
                 }
                 showEditDialog = false
                 selectedStudent = null
+            }
+        )
+    }
+    
+    if (showDetailsDialog && selectedStudent != null) {
+        StudentDetailsDialog(
+            student = selectedStudent!!,
+            onDismiss = {
+                showDetailsDialog = false
+                selectedStudent = null
+            },
+            onEdit = {
+                showDetailsDialog = false
+                showEditDialog = true
             }
         )
     }
@@ -459,4 +480,163 @@ fun StudentDialog(
             }
         }
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun StudentDetailsDialog(
+    student: Student,
+    onDismiss: () -> Unit,
+    onEdit: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        modifier = Modifier.fillMaxWidth(0.9f),
+        title = {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Student Details",
+                    style = MaterialTheme.typography.headlineSmall
+                )
+                IconButton(onClick = onEdit) {
+                    Icon(
+                        Icons.Default.Edit,
+                        contentDescription = "Edit Student",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+        },
+        text = {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(80.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primaryContainer),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "${student.firstName.first()}${student.lastName.first()}".uppercase(),
+                            style = MaterialTheme.typography.headlineLarge,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+                
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    DetailItem(
+                        label = "Full Name",
+                        value = "${student.firstName} ${student.lastName}",
+                        icon = Icons.Default.Person
+                    )
+                    DetailItem(
+                        label = "Student ID",
+                        value = student.studentNumber,
+                        icon = Icons.Default.Star
+                    )
+                    DetailItem(
+                        label = "Email",
+                        value = student.email,
+                        icon = Icons.Default.Person
+                    )
+                    DetailItem(
+                        label = "Department",
+                        value = student.department,
+                        icon = Icons.Default.Settings
+                    )
+                    
+                    if (!student.createdAt.isNullOrEmpty()) {
+                        DetailItem(
+                            label = "Date Created",
+                            value = formatDate(student.createdAt),
+                            icon = Icons.Default.Info
+                        )
+                    }
+                    
+                    if (!student.updatedAt.isNullOrEmpty()) {
+                        DetailItem(
+                            label = "Last Updated",
+                            value = formatDate(student.updatedAt),
+                            icon = Icons.Default.Refresh
+                        )
+                    }
+                    
+                    DetailItem(
+                        label = "Student ID",
+                        value = student.id.toString(),
+                        icon = Icons.Default.Info
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Close")
+            }
+        }
+    )
+}
+
+@Composable
+fun DetailItem(
+    label: String,
+    value: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(20.dp),
+            tint = MaterialTheme.colorScheme.primary
+        )
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                text = value,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.Medium
+            )
+        }
+    }
+}
+
+fun formatDate(dateString: String): String {
+    return try {
+        val parts = dateString.split("T")
+        if (parts.isNotEmpty()) {
+            parts[0]
+        } else {
+            dateString
+        }
+    } catch (e: Exception) {
+        dateString
+    }
 }
